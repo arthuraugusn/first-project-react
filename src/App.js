@@ -4,23 +4,37 @@ import { Component } from 'react';
 class App extends Component {
 
   state = {
-    posts: [
-      {
-        id: 1,
-        title: 'Titulo 1',
-        body: 'Corpo 1'
-      },
-      {
-        id: 2,
-        title: 'Titulo 2',
-        body: 'Corpo 2'
-      },
-      {
-        id: 3,
-        title: 'Titulo 3',
-        body: 'Corpo 3'
-      }
-    ]
+    posts: []
+  }
+
+
+  componentDidMount() {
+    this.loadPosts()
+  }
+
+  loadPosts = async () => {
+
+    const postResponse = fetch('https://jsonplaceholder.typicode.com/posts')
+    const photosResponse = fetch('https://jsonplaceholder.typicode.com/photos')
+
+    const [posts, photos] = await Promise.all([postResponse, photosResponse])
+
+    const postsJson = await posts.json()
+    const photosJson = await photos.json()
+
+    const postsAndPhotos = postsJson.map((post, index) => {
+      return { ...post, cover: photosJson[index].url }
+    })
+
+    this.setState({ posts: postsAndPhotos })
+
+  }
+
+  componentDidUpdate() {
+
+  }
+
+  componentWillUnmount() {
   }
 
 
@@ -30,14 +44,21 @@ class App extends Component {
     const { posts } = this.state
 
     return (
-      <div className="App">
-        {posts.map(post => (
-          <div key={post.id}>
-            <h1>{post.title}</h1>
-            <p>{post.body}</p>
-          </div>
-        ))}
-      </div >
+      <section className='container'>
+        <div className="posts">
+
+          {posts.map(post => (
+            <div className="post">
+              <img src={posts.cover} alt="teste" />
+              <div key={post.userId} className="post-content">
+                <h1>{post.title}</h1>
+                <p>{post.body}</p>
+              </div>
+            </div>
+          ))}
+        </div >
+      </section>
+
     );
 
   }
