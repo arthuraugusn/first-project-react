@@ -2,6 +2,7 @@ import './styles.css';
 import { Component } from 'react';
 import { loadPosts } from '../../utils/load-posts';
 import { Posts } from '../../components/Posts';
+import { Button } from '../../components/Button';
 
 class Home extends Component {
 
@@ -9,7 +10,7 @@ class Home extends Component {
     posts: [],
     allPost: [],
     page: 0,
-    postsPerPage: 2
+    postsPerPage: 6
   }
 
 
@@ -28,7 +29,18 @@ class Home extends Component {
   }
 
   loadMorePost = () => {
-    console.log("Load more posts");
+    const{
+      page,
+      postsPerPage,
+      allPost,
+      posts
+    } = this.state
+
+    const nextPage = page + postsPerPage
+    const nextPosts = allPost.slice(nextPage, nextPage + postsPerPage)
+    posts.push(...nextPosts)
+
+    this.setState({posts, page: nextPage})
   }
 
   componentDidUpdate() {
@@ -40,12 +52,20 @@ class Home extends Component {
 
   render() {
 
-    const { posts } = this.state
+    const { posts, page, postsPerPage, allPost } = this.state
+
+    const noMorePosts = page + postsPerPage >= allPost.length
 
     return (
       <section className='container'>
         <Posts posts={posts}></Posts>
-        <button onClick={this.loadMorePost}>Load More Posts</button>
+        <div className='button-container'>
+          <Button 
+            text= "Teste"
+            onClick= {this.loadMorePost}
+            disabled={noMorePosts}
+          />
+        </div>
       </section>
 
     );
